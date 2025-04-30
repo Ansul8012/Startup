@@ -1,91 +1,84 @@
 "use client";
 
-import React from 'react';
-import { useSession, signIn, signOut } from "next-auth/react"; // Using useSession hook
-import { LogIn, LogOut } from 'lucide-react'; // Import icons from lucide-react
-import Image from "next/image"; // Import Image component to display the user's image
+import React, { useEffect, useState } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { LogIn, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import RolePrompt from "@/app/prompt/page";
 
 export default function Navbar() {
-  const { data: session } = useSession(); // Fetch session data using useSession hook
+  const { data: session } = useSession();
   const user = session?.user;
+  const router = useRouter();
+
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [storedRole, setStoredRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setStoredRole(localStorage.getItem("userRole"));
+    }
+  }, [session]);
+
+  const handleSignIn = async (role: "student" | "conductor") => {
+    localStorage.setItem("userRole", role);
+    await signIn("google", {
+      callbackUrl: `/redirect-handler`,
+    });
+  };
 
   return (
     <nav className="bg-gray-900 text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo Section */}
         <div className="text-2xl font-extrabold">
           <h1>My Website</h1>
         </div>
 
-        {/* Navigation Links */}
         <div className="hidden md:flex space-x-8">
-          <form action="/about" method="GET">
-            <button
-              type="submit"
-              className="text-white hover:text-gray-300 font-medium transition duration-300"
-            >
-              About
-            </button>
-          </form>
-          <form action="/fees" method="GET">
-            <button
-              type="submit"
-              className="text-white hover:text-gray-300 font-medium transition duration-300"
-            >
-              Fees
-            </button>
-          </form>
-          <form action="/explore" method="GET">
-            <button
-              type="submit"
-              className="text-white hover:text-gray-300 font-medium transition duration-300"
-            >
-              Explore
-            </button>
-          </form>
-          <form action="/more" method="GET">
-            <button
-              type="submit"
-              className="text-white hover:text-gray-300 font-medium transition duration-300"
-            >
-              More
-            </button>
-          </form>
+          {["about", "fees", "explore", "more"].map((page) => (
+            <form action={`/${page}`} method="GET" key={page}>
+              <button className="text-white hover:text-gray-300 font-medium transition duration-300 capitalize">
+                {page}
+              </button>
+            </form>
+          ))}
         </div>
 
-        {/* Conditional Render for Sign In/Sign Out */}
         {!user ? (
-          <div>
-            <button
-              onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium shadow-md hover:bg-blue-700 transition duration-300 flex items-center justify-center space-x-2"
-            >
-              <LogIn size={18} /> {/* Add LogIn icon */}
-              <span>Sign In</span>
-            </button>
-          </div>
+          <button
+            onClick={() => setShowPrompt(true)}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium shadow-md hover:bg-blue-700 transition duration-300 flex items-center space-x-2"
+          >
+            <LogIn size={18} />
+            <span>Sign In</span>
+          </button>
         ) : (
           <div className="flex items-center space-x-4">
-            {/* Display User's Image */}
-            {user.image && (
-              <Image
-                src={user.image}
-                alt="Profile"
-                width={40}
-                height={40}
-                className="rounded-full"
-              />
-            )}
-            {/* Sign Out Button */}
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col">
+                <span className="font-semibold text-sm">
+                  {storedRole === "student" && "🎓 "}
+                  {storedRole === "conductor" && "🚌 "}
+                  {user.name}
+                </span>
+              </div>
+            </div>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="bg-gray-800 text-white px-6 py-2 rounded-lg font-medium shadow-md hover:text-red-400 transition duration-300 flex items-center justify-center space-x-2"
+              className="bg-gray-800 text-white px-6 py-2 rounded-lg font-medium shadow-md hover:text-red-400 transition duration-300 flex items-center space-x-2"
             >
-              <LogOut size={20} /> {/* Add LogOut icon */}
+              <LogOut size={20} />
             </button>
           </div>
         )}
       </div>
+
+      {showPrompt && (
+        <RolePrompt
+          onClose={() => setShowPrompt(false)}
+          onContinue={(role) => handleSignIn(role)}
+        />
+      )}
     </nav>
   );
 }
