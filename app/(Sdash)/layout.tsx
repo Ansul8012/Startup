@@ -1,9 +1,17 @@
-import React from 'react';
+import { ReactNode } from "react";
+import Sdashboard from "@/app/components/Sdashboard";  // Adjust the import path
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface LayoutProps {
+  children: ReactNode;
+  params: { username: string };
+}
+
+export default function Layout({ children, params }: LayoutProps) {
   return (
     <div>
-      {/* You can add a sidebar or navbar here if needed */}
+      {/* Pass the username dynamically to Sdashboard */}
+      <Sdashboard params={params} />
+      {/* Render any children here if needed */}
       {children}
     </div>
   );
