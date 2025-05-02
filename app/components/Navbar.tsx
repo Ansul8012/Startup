@@ -22,9 +22,7 @@ export default function Navbar() {
 
   const handleSignIn = async (role: "student" | "conductor") => {
     localStorage.setItem("userRole", role);
-    await signIn("google", {
-      callbackUrl: `/redirect-handler`,
-    });
+    await signIn("google", { callbackUrl: "/redirect-handler" });
   };
 
   return (
@@ -54,14 +52,12 @@ export default function Navbar() {
           </button>
         ) : (
           <div className="flex items-center space-x-4">
-            <div className="flex items-center gap-2">
-              <div className="flex flex-col">
-                <span className="font-semibold text-sm">
-                  {storedRole === "student" && "🎓 "}
-                  {storedRole === "conductor" && "🚌 "}
-                  {user.name}
-                </span>
-              </div>
+            <div className="flex flex-col">
+              <span className="font-semibold text-sm">
+                {storedRole === "student" && "🎓 "}
+                {storedRole === "conductor" && "🚌 "}
+                {user.name}
+              </span>
             </div>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
@@ -76,7 +72,7 @@ export default function Navbar() {
       {showPrompt && (
         <RolePrompt
           onClose={() => setShowPrompt(false)}
-          onContinue={(role) => handleSignIn(role)}
+          onContinue={handleSignIn}
         />
       )}
     </nav>
