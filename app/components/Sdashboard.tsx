@@ -1,15 +1,9 @@
-"use client";
+// app/studentDashboard/[username]/page.tsx
 
-import {
-  Bus,
-  MapPin,
-  UserCheck,
-  History,
-  Bell,
-  GraduationCap,
-} from "lucide-react";
+import { Bus, MapPin, UserCheck, History, Bell } from "lucide-react";
 import StudentCard from "@/app/components/ui/StudentCard";
-import { useParams } from "next/navigation";
+import StudentIDCard from "@/app/components/ui/StudentIdCard";  // Ensure SSR compatibility
+import { auth } from "@/auth";
 
 const dashboardItems = [
   {
@@ -44,28 +38,26 @@ const dashboardItems = [
   },
 ];
 
-export default function Sdashboard() {
-  const params = useParams();
-  const username = decodeURIComponent(params.username as string);
-
+export default async function Sdashboard() {
+  const session= await auth();
+  const username = session?.user?.name || "Student"; // Fallback to "Student" if name is not available
   const displayName = username
     .split(/[-_]/)
     .join(" ")
     .replace(/\b\w/g, (l) => l.toUpperCase());
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-10 bg-black text-white">
-      {/* Header section */}
-      <div className="flex flex-col items-center justify-center mb-12">
-        <div className="bg-gray-800 p-4 rounded-full mb-4 shadow-lg shadow-indigo-500/20">
-          <GraduationCap className="w-12 h-12 text-indigo-400" />
-        </div>
+    <div className="min-h-screen flex flex-col px-6 py-10 bg-[#0b0b0b] text-white">
+      <div className="flex flex-col items-center justify-center mb-10">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-white">
           Welcome, {displayName} 👋
         </h1>
       </div>
 
-      {/* Dashboard grid */}
+      <div className="flex justify-center mb-12">
+        <StudentIDCard />
+      </div>
+
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-16">
         {dashboardItems.map((item, index) => (
           <StudentCard
@@ -79,10 +71,6 @@ export default function Sdashboard() {
         ))}
       </div>
 
-      {/* Push footer to bottom */}
-      <div className="flex-grow" />
-
-      {/* Footer motto */}
       <div className="text-center text-2xl text-gray-300 italic font-light space-y-2 pb-4">
         <p className="text-lg sm:text-xl font-medium text-white tracking-wide">
           “Know where your bus is — arrive on time, every time.”
