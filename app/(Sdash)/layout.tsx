@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import Sdashboard from "@/app/components/Sdashboard";  // Adjust the import path
 import type { Metadata } from "next";
 interface LayoutProps {
   children: ReactNode;
@@ -11,12 +10,9 @@ export const metadata:Metadata = {
   description: "Student Dashboard",
 };
 
-export default function Layout({ children, params }: LayoutProps) {
+export default function Layout({ children }: LayoutProps) {
   return (
     <div>
-      {/* Pass the username dynamically to Sdashboard */}
-      <Sdashboard params={params} />
-      {/* Render any children here if needed */}
       {children}
     </div>
   );

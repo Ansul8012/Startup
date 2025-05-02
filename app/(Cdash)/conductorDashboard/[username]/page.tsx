@@ -1,12 +1,14 @@
-"use client";
+import Cdashboard from "@/app/components/Cdashboard";
+import { ReactNode } from "react";
+interface LayoutProps {
+  children: ReactNode;
+  params: { username: string };
+}
 
-import React from "react";
-
-
-const Page = () => {
-
+const Page = ({ params }: LayoutProps) => {
   return (
-    <></>
+    <>
+     <Cdashboard params={params} /></>
   );
 };
 
