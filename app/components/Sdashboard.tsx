@@ -46,7 +46,7 @@ export default async function Sdashboard() {
     .replace(/\b\w/g, (l) => l.toUpperCase());
 
   return (
-    <div className="min-h-screen flex flex-col px-6 py-10 bg-[#0b0b0b] text-white">
+    <div className="min-h-screen flex flex-col px-6 py-10 bg-[#181717] text-white">
       <MotionWrapper delay={0.1}>
         <div className="flex flex-col items-center justify-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-center text-white">
