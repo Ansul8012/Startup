@@ -70,10 +70,10 @@ const HeroComponent: React.FC = () => {
       {/* Background Map */}
       <div
         className="absolute inset-0 bg-cover bg-center z-0"
-        style={{
-          backgroundImage:
-            "url('https://thumbs.dreamstime.com/b/ancient-leather-antique-brown-world-map-adventure-concept-macro-shot-generative-ai-ancient-leather-antique-vintage-brown-world-map-360048237.jpg')",
-        }}
+        // style={{
+        //   backgroundImage:
+        //     "url('https://thumbs.dreamstime.com/b/ancient-leather-antique-brown-world-map-adventure-concept-macro-shot-generative-ai-ancient-leather-antique-vintage-brown-world-map-360048237.jpg')",
+        // }}
       />
 
       {/* Animated Lens */}

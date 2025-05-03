@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { LogIn, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import RolePrompt from "@/app/prompt/page";
+import Loader from '@/app/components/Loader';  // Assuming you've created a separate Loader component
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -13,6 +14,7 @@ export default function Navbar() {
 
   const [showPrompt, setShowPrompt] = useState(false);
   const [storedRole, setStoredRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -21,8 +23,10 @@ export default function Navbar() {
   }, [session]);
 
   const handleSignIn = async (role: "student" | "conductor") => {
+    setLoading(true); // Start loading
     localStorage.setItem("userRole", role);
     await signIn("google", { callbackUrl: "/redirect-handler" });
+    setLoading(false); // Stop loading once sign-in is done
   };
 
   return (
@@ -43,13 +47,17 @@ export default function Navbar() {
         </div>
 
         {!user ? (
-          <button
-            onClick={() => setShowPrompt(true)}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium shadow-md hover:bg-blue-700 transition duration-300 flex items-center space-x-2"
-          >
-            <LogIn size={18} />
-            <span>Sign In</span>
-          </button>
+          loading ? (
+            <Loader />  // Show loader while loading
+          ) : (
+            <button
+              onClick={() => setShowPrompt(true)}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium shadow-md hover:bg-blue-700 transition duration-300 flex items-center space-x-2"
+            >
+              <LogIn size={18} />
+              <span>Sign In</span>
+            </button>
+          )
         ) : (
           <div className="flex items-center space-x-4">
             <div className="flex flex-col">
