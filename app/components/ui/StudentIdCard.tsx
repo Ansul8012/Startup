@@ -1,61 +1,55 @@
-import { auth } from "@/auth"; // adjust path if needed
-import Image from "next/image";
-import { GraduationCap } from "lucide-react";
+import { auth } from "@/auth";
+import { GraduationCap, Phone, UserCircle2, MapPin, IdCard } from "lucide-react";
+import { client } from "@/sanity/lib/client";
+import { STUDENT_BY_EMAIL_QUERY } from "@/sanity/lib/queries";
 
 export default async function StudentIDCard() {
   const session = await auth();
-
-  const student = {
-    name: session?.user?.name || "Unknown Name",
-    image: session?.user?.image || "/placeholder.png",
-    studentid:220211314,
-    course: 'Btech',
-    batch: '2022-2026',
-    route: 'Kargi chowk',
-  };
+  const email = session?.user?.email;
+  const student = await client.fetch(STUDENT_BY_EMAIL_QUERY, { email });
+  const hasAllInfo = student?.name && student?.route?.name;
 
   return (
-    <div className="bg-gradient-to-br from-gray-800 to-gray-900 border border-white/20 rounded-xl w-full max-w-sm p-6 shadow-lg hover:shadow-indigo-500/20 transition-shadow">
-      {student.route && student.batch ? (
-        <div className="flex flex-col items-center gap-4">
-          <GraduationCap className="w-10 h-10 text-indigo-400" />
-          <div className="text-sm font-semibold text-indigo-400 uppercase tracking-wider">
-            Student
-          </div>
-          <div className="text-xl font-bold text-white">Startup</div>
-          <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-white">
-            <Image
-              src={student.image}
-              alt="Student Profile"
-              width={112}
-              height={112}
-              className="object-cover"
-            />
-          </div>
-          <div className="text-lg font-semibold text-white">{student.name}</div>
-          <div className="text-sm text-gray-200">{student.studentid}</div>
-          <div className="text-sm text-gray-400">{student.course}</div>
-          <div className="text-sm text-gray-400">{student.batch}</div>
-          <div className="text-sm text-gray-400">{student.route}</div>
+    <div className="bg-gradient-to-br from-slate-900 to-gray-950 text-white rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-white/10 space-y-6 mx-auto text-center">
+      <div className="flex flex-col items-center">
+        <GraduationCap className="w-10 h-10 text-indigo-500 mb-2" />
+        <h2 className="text-sm font-bold tracking-widest uppercase text-indigo-300">Student</h2>
+        <h1 className="text-2xl font-extrabold tracking-wide mb-4 text-white">Startup</h1>
+        <div className="text-xl font-semibold text-white">{student?.name}</div>
+        <div className="text-sm text-gray-400 flex items-center gap-1 justify-center">
+          <IdCard className="w-4 h-4" /> {student?.studentId}
         </div>
-      ) : (
-        <div className="flex flex-col items-center gap-4">
-          <GraduationCap className="w-10 h-10 text-indigo-400" />
-          <div className="text-sm font-semibold text-indigo-400 uppercase tracking-wider">
-            Student
+      </div>
+
+      <div className="border-t border-white/10 pt-4 space-y-2">
+        {[
+          {
+            icon: <UserCircle2 className="w-4 h-4 text-indigo-400" />,
+            text: student?.email,
+          },
+          {
+            icon: <Phone className="w-4 h-4 text-indigo-400" />,
+            text: student?.phone,
+          },
+          {
+            icon: <MapPin className="w-4 h-4 text-indigo-400" />,
+            text: `Route: ${student?.route?.name}`,
+          },
+        ].map((item, idx) => (
+          <div
+            key={idx}
+            className="group flex items-center justify-center gap-2 text-sm text-gray-300 relative pb-1"
+          >
+            {item.icon}
+            <span>{item.text}</span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full" />
           </div>
-          <div className="text-xl font-bold text-white">Startup</div>
-          <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-white">
-            <Image
-              src={student.image}
-              alt="Student Profile"
-              width={112}
-              height={112}
-              className="object-cover"
-            />
-          </div>
-          <div className="text-lg font-semibold text-white">{student.name}</div>
-          <button className="mt-4 bg-indigo-900 text-white px-4 py-2 rounded hover:bg-indigo-800 transition">
+        ))}
+      </div>
+
+      {!hasAllInfo && (
+        <div className="mt-4 flex justify-center">
+          <button className="bg-indigo-700 text-white px-4 py-2 rounded-xl hover:bg-indigo-600 transition shadow">
             Register Yourself
           </button>
         </div>
